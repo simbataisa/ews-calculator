@@ -312,7 +312,13 @@ def manual_input_tab(step_values):
 def csv_upload_tab(step_values):
     """Handle CSV upload tab functionality"""
     st.markdown("### Upload Data")
-    uploaded_file = st.file_uploader("Upload CSV file", type=['csv'])
+    # Add a key to the file_uploader to force clear on new upload
+    uploaded_file = st.file_uploader("Upload CSV file", type=['csv'], key="csv_uploader")
+    
+    # Clear all states if file uploader is empty (user clicked clear)
+    if uploaded_file is None:
+        st.session_state.clear()
+        return
     
     # Example CSV format
     st.markdown("""
@@ -327,7 +333,16 @@ def csv_upload_tab(step_values):
     
     if uploaded_file is not None:
         try:
+            # Clear previous results from session state
+            for key in list(st.session_state.keys()):
+                if key.startswith('results_'):
+                    del st.session_state[key]
+            
+            # Process new file
             df = load_and_process_csv(uploaded_file)
+            
+            # Store current file name in session state
+            st.session_state.current_file = uploaded_file.name
             
             # Calculate metrics for each row
             results_list = []
