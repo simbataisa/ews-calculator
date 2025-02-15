@@ -1,0 +1,3 @@
+date,actual_volume,target_volume,actual_inventory,planned_inventory,outstanding_loan_other,credit_limit,cash_balance,loan_amount,account_balance
+2024-01-01,100,200,150,100,50,500,400,300,350
+2024-01-02,150,200,120,100,40,500,450,300,400
