@@ -121,12 +121,196 @@ def create_summary_charts(df_results):
     
     return charts
 
-def main():
-    st.set_page_config(page_title="EWS Criteria Calculator", layout="wide")
+def manual_input_tab(step_values):
+    """Handle manual input tab functionality"""
+    col1, col2 = st.columns(2)
     
-    st.title("Early Warning System (EWS) Criteria Calculator")
+    with col1:
+        st.subheader("Input Values")
+        
+        # Procurement Volume Section
+        st.markdown("### 1. Procurement Volume")
+        st.markdown(f"Step Value: {step_values['procurement']:,}")
+        actual_volume_units = st.number_input(
+            "Actual Procurement Volume (in thousands)",
+            min_value=0,
+            value=0,
+            step=1,
+            help=f"Enter units of {step_values['procurement']:,}"
+        )
+        actual_volume = actual_volume_units * step_values['procurement']
+        st.markdown(f"Actual Value: {actual_volume:,.2f}")
+        
+        target_volume_units = st.number_input(
+            "Target Procurement Volume (in thousands)",
+            min_value=0,
+            value=0,
+            step=1,
+            help=f"Enter units of {step_values['procurement']:,}"
+        )
+        target_volume = target_volume_units * step_values['procurement']
+        st.markdown(f"Target Value: {target_volume:,.2f}")
+        
+        pvr_periods = st.number_input(
+            "Consecutive Low PVR Periods",
+            min_value=0,
+            max_value=10,
+            value=0
+        )
+        
+        # Inventory Level Section
+        st.markdown("### 2. Inventory Level")
+        st.markdown(f"Step Value: {step_values['inventory']:,}")
+        actual_inventory_units = st.number_input(
+            "Actual Inventory Level (in thousands)",
+            min_value=0,
+            value=0,
+            step=1,
+            help=f"Enter units of {step_values['inventory']:,}"
+        )
+        actual_inventory = actual_inventory_units * step_values['inventory']
+        st.markdown(f"Actual Value: {actual_inventory:,.2f}")
+        
+        planned_inventory_units = st.number_input(
+            "Planned Inventory Level (in thousands)",
+            min_value=0,
+            value=0,
+            step=1,
+            help=f"Enter units of {step_values['inventory']:,}"
+        )
+        planned_inventory = planned_inventory_units * step_values['inventory']
+        st.markdown(f"Planned Value: {planned_inventory:,.2f}")
+        
+        # Outstanding Loan Section
+        st.markdown("### 3. Outstanding Loan")
+        st.markdown(f"Step Value: {step_values['loan']:,}")
+        other_loans_units = st.number_input(
+            "Outstanding Loan at Other Banks (in thousands)",
+            min_value=0,
+            value=0,
+            step=1,
+            help=f"Enter units of {step_values['loan']:,}"
+        )
+        other_loans = other_loans_units * step_values['loan']
+        st.markdown(f"Loan Value: {other_loans:,.2f}")
+        
+        credit_limit_units = st.number_input(
+            "Approved Credit Limit (in thousands)",
+            min_value=0,
+            value=0,
+            step=1,
+            help=f"Enter units of {step_values['loan']:,}"
+        )
+        credit_limit = credit_limit_units * step_values['loan']
+        st.markdown(f"Credit Limit Value: {credit_limit:,.2f}")
+        
+        # Cash and Balance Section
+        st.markdown("### 4. Cash and Balance")
+        st.markdown(f"Step Value: {step_values['balance']:,}")
+        cash_balance_units = st.number_input(
+            "Cash Average Balance (in thousands)",
+            min_value=0,
+            value=0,
+            step=1,
+            help=f"Enter units of {step_values['balance']:,}"
+        )
+        cash_balance = cash_balance_units * step_values['balance']
+        st.markdown(f"Cash Balance Value: {cash_balance:,.2f}")
+        
+        loan_amount_units = st.number_input(
+            "Outstanding Loan Amount (in thousands)",
+            min_value=0,
+            value=0,
+            step=1,
+            help=f"Enter units of {step_values['balance']:,}"
+        )
+        loan_amount = loan_amount_units * step_values['balance']
+        st.markdown(f"Loan Amount Value: {loan_amount:,.2f}")
+        
+        account_balance_units = st.number_input(
+            "Account Balance (in thousands)",
+            min_value=0,
+            value=0,
+            step=1,
+            help=f"Enter units of {step_values['balance']:,}"
+        )
+        account_balance = account_balance_units * step_values['balance']
+        st.markdown(f"Account Balance Value: {account_balance:,.2f}")
+        
+        clr_periods = st.number_input(
+            "Consecutive Low CLR Periods",
+            min_value=0,
+            max_value=10,
+            value=0
+        )
+        
+        # Credit Rating Section
+        st.markdown("### 5. Credit Rating")
+        credit_rating = st.selectbox(
+            "Current Credit Rating",
+            ["Good (No Change)", "Dropped from Previous", "B1", "B2", "B3", "Bad Debt"]
+        )
     
-    # File upload section
+    with col2:
+        st.subheader("Results")
+        
+        # Create a row of data from manual inputs
+        row_data = {
+            'actual_volume': actual_volume_units,
+            'target_volume': target_volume_units,
+            'actual_inventory': actual_inventory_units,
+            'planned_inventory': planned_inventory_units,
+            'outstanding_loan_other': other_loans_units,
+            'credit_limit': credit_limit_units,
+            'cash_balance': cash_balance_units,
+            'loan_amount': loan_amount_units,
+            'account_balance': account_balance_units
+        }
+        
+        # Calculate results
+        results = calculate_all_metrics(row_data, step_values)
+        
+        # Add credit rating status
+        if credit_rating == "Good (No Change)":
+            results['Credit Rating'] = "Green"
+        elif credit_rating == "Dropped from Previous":
+            results['Credit Rating'] = "Yellow"
+        elif credit_rating in ["B1", "B2", "B3"]:
+            results['Credit Rating'] = "Orange"
+        elif credit_rating == "Bad Debt":
+            results['Credit Rating'] = "Red"
+        
+        # Display results with colored boxes
+        for metric, status in results.items():
+            if not metric.endswith('_Value'):
+                color = 'green' if status == 'Green' else \
+                        'yellow' if status == 'Yellow' else \
+                        'orange' if status == 'Orange' else \
+                        'red' if status == 'Red' else 'gray'
+                
+                st.markdown(
+                    f"""
+                    <div style="
+                        padding: 10px;
+                        border-radius: 5px;
+                        margin: 5px 0;
+                        background-color: {color};
+                        opacity: 0.7;
+                    ">
+                        <strong>{metric}:</strong> {status}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+        
+        # Display calculated values
+        st.markdown("### Calculated Values")
+        for metric, value in results.items():
+            if metric.endswith('_Value'):
+                st.info(f"{metric.replace('_Value', '')}: {value:.2f}%")
+
+def csv_upload_tab(step_values):
+    """Handle CSV upload tab functionality"""
     st.markdown("### Upload Data")
     uploaded_file = st.file_uploader("Upload CSV file", type=['csv'])
     
@@ -140,6 +324,67 @@ def main():
     - outstanding_loan_other, credit_limit
     - cash_balance, loan_amount, account_balance
     """)
+    
+    if uploaded_file is not None:
+        try:
+            df = load_and_process_csv(uploaded_file)
+            
+            # Calculate metrics for each row
+            results_list = []
+            for _, row in df.iterrows():
+                results = calculate_all_metrics(row, step_values)
+                if 'date' in df.columns:
+                    results['date'] = row['date']
+                results_list.append(results)
+            
+            df_results = pd.DataFrame(results_list)
+            
+            # Display summary statistics
+            st.markdown("### Summary Statistics")
+            
+            # Status distribution
+            status_cols = [col for col in df_results.columns if not col.endswith('_Value') and col != 'date']
+            for metric in status_cols:
+                st.write(f"#### {metric} Distribution")
+                status_counts = df_results[metric].value_counts()
+                st.write(status_counts)
+            
+            # Create and display charts
+            st.markdown("### Visualization")
+            charts = create_summary_charts(df_results)
+            
+            for chart in charts:
+                st.plotly_chart(chart, use_container_width=True)
+            
+            # Export results
+            st.markdown("### Export Results")
+            if st.button("Export Results"):
+                output = io.BytesIO()
+                df_results.to_excel(output, index=False, engine='openpyxl')
+                output.seek(0)
+                
+                st.download_button(
+                    label="Download Results as Excel",
+                    data=output,
+                    file_name=f"ews_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
+                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                )
+        
+        except Exception as e:
+            st.error(f"Error processing file: {str(e)}")
+            st.markdown("""
+            Please ensure your CSV file follows the expected format:
+            ```
+            date,actual_volume,target_volume,actual_inventory,planned_inventory,outstanding_loan_other,credit_limit,cash_balance,loan_amount,account_balance
+            2024-01-01,100,200,150,100,50,500,400,300,350
+            2024-01-02,150,200,120,100,40,500,450,300,400
+            ```
+            """)
+
+def main():
+    st.set_page_config(page_title="EWS Criteria Calculator", layout="wide")
+    
+    st.title("Early Warning System (EWS) Criteria Calculator")
     
     # Configuration section
     with st.expander("⚙️ Configure Step Values", expanded=True):
@@ -203,70 +448,22 @@ def main():
                 help="Step value for balance amounts"
             )
     
-    # Process uploaded file
-    if uploaded_file is not None:
-        try:
-            df = load_and_process_csv(uploaded_file)
-            
-            # Create step values dictionary
-            step_values = {
-                'procurement': procurement_step,
-                'inventory': inventory_step,
-                'loan': loan_step,
-                'balance': balance_step
-            }
-            
-            # Calculate metrics for each row
-            results_list = []
-            for _, row in df.iterrows():
-                results = calculate_all_metrics(row, step_values)
-                if 'date' in df.columns:
-                    results['date'] = row['date']
-                results_list.append(results)
-            
-            df_results = pd.DataFrame(results_list)
-            
-            # Display summary statistics
-            st.markdown("### Summary Statistics")
-            
-            # Status distribution
-            status_cols = [col for col in df_results.columns if not col.endswith('_Value') and col != 'date']
-            for metric in status_cols:
-                st.write(f"#### {metric} Distribution")
-                status_counts = df_results[metric].value_counts()
-                st.write(status_counts)
-            
-            # Create and display charts
-            st.markdown("### Visualization")
-            charts = create_summary_charts(df_results)
-            
-            for chart in charts:
-                st.plotly_chart(chart, use_container_width=True)
-            
-            # Export results
-            st.markdown("### Export Results")
-            if st.button("Export Results"):
-                output = io.BytesIO()
-                df_results.to_excel(output, index=False, engine='openpyxl')
-                output.seek(0)
-                
-                st.download_button(
-                    label="Download Results as Excel",
-                    data=output,
-                    file_name=f"ews_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx",
-                    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                )
-        
-        except Exception as e:
-            st.error(f"Error processing file: {str(e)}")
-            st.markdown("""
-            Please ensure your CSV file follows the expected format:
-            ```
-            date,actual_volume,target_volume,actual_inventory,planned_inventory,outstanding_loan_other,credit_limit,cash_balance,loan_amount,account_balance
-            2024-01-01,100,200,150,100,50,500,400,300,350
-            2024-01-02,150,200,120,100,40,500,450,300,400
-            ```
-            """)
+    # Create step values dictionary
+    step_values = {
+        'procurement': procurement_step,
+        'inventory': inventory_step,
+        'loan': loan_step,
+        'balance': balance_step
+    }
+    
+    # Create tabs
+    tab1, tab2 = st.tabs(["Manual Input", "CSV Upload"])
+    
+    with tab1:
+        manual_input_tab(step_values)
+    
+    with tab2:
+        csv_upload_tab(step_values)
 
 if __name__ == "__main__":
     main()
