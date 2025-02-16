@@ -58,11 +58,13 @@ def create_distribution_plot(price_dist):
     
     fig = go.Figure()
     
-    # Add distribution curve
+    # Add distribution curve with gradient fill
     fig.add_trace(go.Scatter(
         x=x, 
         y=y,
         fill='tozeroy',
+        fillcolor='rgba(100, 149, 237, 0.6)',  # Cornflower blue with transparency
+        line=dict(color='rgba(100, 149, 237, 1)'),
         name='Phân Phối Giá'
     ))
     
@@ -81,16 +83,19 @@ def create_distribution_plot(price_dist):
             line_color=color,
             line_dash="dash",
             annotation_text=name,
-            annotation_position="top"
+            annotation_position="top",
+            annotation_font=dict(size=12, color=color)
         )
     
     fig.update_layout(
-        title="Phân Phối Giá",
+        title=dict(text="Phân Phối Giá", x=0.5, xanchor='center', font=dict(size=20)),
         xaxis_title="Giá (VNĐ)",
         yaxis_title="Mật Độ",
         showlegend=False,
-        height=300,
-        xaxis=dict(tickformat=",")
+        height=400,
+        xaxis=dict(tickformat=",", gridcolor='lightgray'),
+        yaxis=dict(gridcolor='lightgray'),
+        plot_bgcolor='rgba(240, 240, 240, 0.8)'
     )
     
     return fig
