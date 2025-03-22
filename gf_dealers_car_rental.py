@@ -882,15 +882,12 @@ if st.session_state.current_page == 'home':
     st.markdown("</div>", unsafe_allow_html=True)
 
     # Khu vực tìm kiếm và lọc
-    # st.markdown("<div class='section'>", unsafe_allow_html=True)
     st.markdown("<h3 class='section-header'>Tìm kiếm xe VinFast</h3>", unsafe_allow_html=True)
-
-    # Tìm kiếm đơn giản
-    search_keyword = st.text_input("🔍 Tìm kiếm theo từ khóa", placeholder="Nhập tên mẫu xe, đại lý, địa điểm...")
 
     # Panel lọc nâng cao
     with st.expander("Lọc nâng cao", expanded=True):
-        st.markdown("<div class='filter-panel'>", unsafe_allow_html=True)
+        # Tìm kiếm đơn giản
+        search_keyword = st.text_input("🔍 Tìm kiếm theo từ khóa", placeholder="Nhập tên mẫu xe, đại lý, địa điểm...")
 
         # Hàng 1: Lọc địa điểm và dòng xe
         col1, col2, col3 = st.columns(3)
@@ -931,8 +928,6 @@ if st.session_state.current_page == 'home':
                 "Sắp xếp theo",
                 options=["Giá thấp đến cao", "Giá cao đến thấp", "A-Z theo mẫu xe"]
             )
-
-        st.markdown("</div>", unsafe_allow_html=True)
 
     # Áp dụng tìm kiếm và lọc
     filtered_results = advanced_search(
