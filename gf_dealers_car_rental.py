@@ -64,29 +64,65 @@ st.markdown("""
     }
     
     .stat-box {
-        background: white;
-        border-radius: 15px;
-        padding: 2rem;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        border-radius: 20px;
+        padding: 2.5rem 1.5rem;
         text-align: center;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        box-shadow: 0 10px 20px rgba(46, 139, 87, 0.1),
+                   0 6px 6px rgba(0, 0, 0, 0.05);
         margin: 1rem;
-        transition: transform 0.2s;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(46, 139, 87, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stat-box::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, #1a472a, #2e8b57);
     }
     
     .stat-box:hover {
-        transform: translateY(-5px);
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(46, 139, 87, 0.2),
+                   0 10px 10px rgba(0, 0, 0, 0.05);
     }
     
     .stat-number {
-        font-size: 2.5rem;
-        font-weight: bold;
-        color: #2e8b57;
-        margin-bottom: 0.5rem;
+        font-size: 3rem;
+        font-weight: 800;
+        background: linear-gradient(90deg, #1a472a, #2e8b57);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 1rem;
+        line-height: 1;
     }
     
     .stat-label {
-        font-size: 1.2rem;
-        color: #666;
+        font-size: 1.1rem;
+        color: #495057;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    @media (max-width: 768px) {
+        .stat-box {
+            padding: 1.5rem 1rem;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+        }
     }
     
     /* Search and filter section */
@@ -626,32 +662,52 @@ if st.session_state.current_page == 'home':
         st.image("https://via.placeholder.com/1200x400?text=Green+Future+Banner", use_container_width=True)
     st.markdown("</div>", unsafe_allow_html=True)
 
+    # Calculate dynamic statistics
+    total_cars = len(df)
+    total_provinces = len(df['Tỉnh/Thành phố'].unique())
+    total_models = len(df['Model'].unique())
+    support_hours = "24/7"
+
+    # Format large numbers with comma separator
+    def format_number(num):
+        return f"{num:,}"
+
     # Thống kê chính
     st.markdown("<div class='section'>", unsafe_allow_html=True)
     col1, col2, col3, col4 = st.columns(4)
+
     with col1:
-        st.markdown("<div class='stat-box'>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-number'>35+</div>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-label'>Xe VinFast sẵn sàng</div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class='stat-box'>
+                <div class='stat-number'>{format_number(total_cars)}</div>
+                <div class='stat-label'>Xe VinFast sẵn sàng</div>
+            </div>
+        """, unsafe_allow_html=True)
 
     with col2:
-        st.markdown("<div class='stat-box'>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-number'>6</div>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-label'>Tỉnh/Thành phố</div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class='stat-box'>
+                <div class='stat-number'>{format_number(total_provinces)}</div>
+                <div class='stat-label'>Tỉnh/Thành phố</div>
+            </div>
+        """, unsafe_allow_html=True)
 
     with col3:
-        st.markdown("<div class='stat-box'>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-number'>7</div>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-label'>Mẫu xe khác nhau</div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class='stat-box'>
+                <div class='stat-number'>{format_number(total_models)}</div>
+                <div class='stat-label'>Mẫu xe khác nhau</div>
+            </div>
+        """, unsafe_allow_html=True)
 
     with col4:
-        st.markdown("<div class='stat-box'>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-number'>24/7</div>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-label'>Hỗ trợ khách hàng</div>", unsafe_allow_html=True)
-        st.markdown("</div>", unsafe_allow_html=True)
+        st.markdown(f"""
+            <div class='stat-box'>
+                <div class='stat-number'>{support_hours}</div>
+                <div class='stat-label'>Hỗ trợ khách hàng</div>
+            </div>
+        """, unsafe_allow_html=True)
+
     st.markdown("</div>", unsafe_allow_html=True)
 
     # Khu vực tìm kiếm và lọc
