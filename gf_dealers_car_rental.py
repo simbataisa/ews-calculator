@@ -5,221 +5,183 @@ from PIL import Image
 import re
 import os
 
-# Add this at the beginning of your file, after imports
+# Set page config at the start of the file
+st.set_page_config(
+    page_title="Green Future - Thuê xe VinFast",
+    page_icon="🌿",
+    layout="wide",
+    initial_sidebar_state="collapsed"
+)
+
+# Enhanced CSS for full-screen landscape layout
 st.markdown("""
 <style>
-    /* Color Variables */
-    :root {
-        --primary-color: #06F567;
-        --primary-dark: #05d45a;
-        --primary-light: #39f786;
-        --primary-bg: #e6fff0;
-        --text-dark: #1a1a1a;
-        --text-light: #ffffff;
-    }
-
-    /* Global Styles */
-    [data-testid="stAppViewContainer"] {
-        background-color: var(--primary-bg);
+    /* Full screen layout */
+    .stApp {
+        max-width: 100vw !important;
+        padding: 0 !important;
     }
     
-    /* Header Styles */
+    /* Header styling */
     .main-header {
-        color: var(--text-dark);
+        background: linear-gradient(90deg, #1a472a, #2e8b57);
+        color: white;
+        padding: 2rem 4rem;
+        margin: 0;
+        width: 100%;
         text-align: center;
-        padding: 2rem 0;
-        font-size: 3rem;
-        font-weight: 700;
-        margin-bottom: 0;
-        text-shadow: 2px 2px 4px rgba(6, 245, 103, 0.2);
+        font-size: 3.5rem;
     }
     
     .sub-header {
-        color: var(--text-dark);
+        background: rgba(46, 139, 87, 0.1);
+        color: #1a472a;
+        padding: 1rem 4rem;
+        margin: 0 0 2rem 0;
         text-align: center;
-        font-size: 1.5rem;
-        margin-top: 0;
-        margin-bottom: 2rem;
-        opacity: 0.8;
+        font-size: 1.8rem;
     }
     
-    /* Stats Section */
+    /* Banner container */
+    .banner-container {
+        width: 100%;
+        max-height: 60vh;
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    
+    .banner-container img {
+        width: 100%;
+        object-fit: cover;
+    }
+    
+    /* Statistics section */
     .section {
+        padding: 2rem 4rem;
+        margin: 0;
         background: white;
-        padding: 2rem;
-        border-radius: 15px;
-        box-shadow: 0 2px 10px rgba(6, 245, 103, 0.1);
-        margin: 2rem 0;
-        border: 1px solid rgba(6, 245, 103, 0.1);
     }
     
     .stat-box {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-        color: var(--text-dark);
-        padding: 1.5rem;
-        border-radius: 10px;
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
         text-align: center;
-        height: 100%;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin: 1rem;
         transition: transform 0.2s;
     }
     
     .stat-box:hover {
         transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(6, 245, 103, 0.2);
     }
     
     .stat-number {
-        font-size: 2rem;
+        font-size: 2.5rem;
         font-weight: bold;
+        color: #2e8b57;
         margin-bottom: 0.5rem;
     }
     
     .stat-label {
-        font-size: 1rem;
-        opacity: 0.9;
+        font-size: 1.2rem;
+        color: #666;
     }
     
-    /* Section Headers */
-    .section-header {
-        color: var(--text-dark);
-        font-size: 1.8rem;
-        margin-bottom: 1.5rem;
-        border-bottom: 2px solid var(--primary-color);
-        padding-bottom: 0.5rem;
+    /* Search and filter section */
+    .filter-panel {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        margin: 1rem 0;
     }
     
-    /* Car Card Styles */
+    /* Car cards grid */
     .car-card {
         background: white;
         border-radius: 15px;
-        padding: 1.5rem;
+        padding: 2rem;
         margin: 1rem 0;
-        box-shadow: 0 2px 15px rgba(6, 245, 103, 0.1);
-        transition: all 0.3s ease;
-        border: 1px solid rgba(6, 245, 103, 0.1);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.2s;
     }
     
     .car-card:hover {
         transform: translateY(-5px);
-        box-shadow: 0 5px 20px rgba(6, 245, 103, 0.2);
-        border-color: var(--primary-color);
     }
     
-    .car-card h4 {
-        color: var(--text-dark);
+    /* Price styling */
+    .price {
         font-size: 1.5rem;
-        margin-bottom: 1rem;
-    }
-    
-    .car-card .price {
-        color: var(--primary-dark);
-        font-size: 1.5rem;
+        color: #2e8b57;
         font-weight: bold;
         margin: 1rem 0;
     }
     
-    /* Button Styles */
-    .stButton > button {
-        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
-        color: var(--text-dark);
+    /* Button styling */
+    .stButton button {
+        background-color: #2e8b57;
+        color: white;
         border: none;
-        padding: 0.75rem 1.5rem;
+        padding: 0.8rem 1.5rem;
         border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.3s ease;
+        font-weight: bold;
+        transition: background-color 0.2s;
     }
     
-    .stButton > button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(6, 245, 103, 0.3);
+    .stButton button:hover {
+        background-color: #1a472a;
     }
     
-    /* Filter Panel */
-    .filter-panel {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(6, 245, 103, 0.1);
-        border: 1px solid rgba(6, 245, 103, 0.1);
-    }
-    
-    /* Form Fields */
-    [data-testid="stTextInput"] > div > div > input {
-        border-color: var(--primary-color);
-    }
-    
-    [data-testid="stTextInput"] > div > div > input:focus {
-        box-shadow: 0 0 0 2px rgba(6, 245, 103, 0.2);
-    }
-    
-    /* Select Boxes */
-    [data-testid="stSelectbox"] {
-        border-color: var(--primary-color);
-    }
-    
-    /* Alerts and Info Boxes */
-    .stAlert {
-        background-color: var(--primary-bg);
-        border-left-color: var(--primary-color);
-    }
-    
-    /* Progress Bar */
-    .stProgress > div > div > div > div {
-        background-color: var(--primary-color);
-    }
-    
-    /* Expander */
-    .streamlit-expanderHeader {
-        background-color: var(--primary-bg);
-        border: 1px solid var(--primary-color);
-    }
-    
-    /* Footer */
-    .footer {
-        text-align: center;
-        padding: 2rem;
-        background: white;
-        border-radius: 10px;
-        margin-top: 3rem;
-        box-shadow: 0 -2px 10px rgba(6, 245, 103, 0.1);
-    }
-    
-    .footer p {
-        color: var(--text-dark);
-        opacity: 0.8;
-    }
-    
-    /* Booking Steps */
-    .booking-step {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 10px;
-        margin: 1rem 0;
-        border: 2px solid var(--primary-color);
-    }
-    
-    .booking-step.active {
-        background: var(--primary-bg);
-        box-shadow: 0 2px 10px rgba(6, 245, 103, 0.2);
-    }
-    
-    /* Responsive Design */
+    /* Responsive design */
     @media (max-width: 768px) {
         .main-header {
-            font-size: 2rem;
+            font-size: 2.5rem;
+            padding: 1.5rem 2rem;
         }
         
         .sub-header {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            padding: 1rem 2rem;
         }
         
         .section {
-            padding: 1rem;
+            padding: 1rem 2rem;
         }
         
-        .car-card {
-            padding: 1rem;
+        .stat-number {
+            font-size: 2rem;
         }
+        
+        .stat-label {
+            font-size: 1rem;
+        }
+    }
+    
+    /* Hide Streamlit default elements */
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    .stDeployButton {display: none;}
+    
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: #2e8b57;
+        border-radius: 5px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: #1a472a;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -247,26 +209,142 @@ st.markdown("""
 @st.cache_data
 def load_data():
     data = {
-        'Tỉnh/Thành phố': ['Hà Nội', 'Hà Nội', 'Hồ Chí Minh', 'Hồ Chí Minh', 'Đà Nẵng',
-                           'Đà Nẵng', 'Cần Thơ', 'Cần Thơ', 'Hải Phòng', 'Hải Phòng',
-                           'Khánh Hòa', 'Khánh Hòa'],
-        'Quận/Huyện': ['Hoàng Mai', 'Hoàng Mai', 'Quận 1', 'Quận 1', 'Hải Châu',
-                       'Hải Châu', 'Ninh Kiều', 'Cái Răng', 'Lê Chân', 'Lê Chân',
-                       'Nha Trang', 'Nha Trang'],
-        'Dealer Name': ['ABC Vinfast Dealer', 'ABC Vinfast Dealer', 'XYZ Vinfast Dealer',
-                        'XYZ Vinfast Dealer', 'Premier Vinfast Dealer', 'Green Motors Dealer',
-                        'ABC Vinfast Dealer', 'XYZ Vinfast Dealer', 'Red Dragon Dealer',
-                        'Red Dragon Dealer', 'Green Motors Dealer', 'Red Dragon Dealer'],
-        'Địa chỉ cụ thể': ['123 Linh Đàm', '123 Linh Đàm', '45 Lê Lợi', '45 Lê Lợi',
-                           '98 Hải Châu', '10 Lê Duẩn', '35 Ninh Kiều', '27 Cái Răng',
-                           '73 Lạch Tray', '73 Lạch Tray', '66 Trần Phú', '89 Hùng Vương'],
-        'Model': ['VF e34', 'VF 8', 'VF e34', 'VF 7', 'VF 8', 'VF 9', 'VF e34', 'VF 8',
-                  'VF e34', 'VF 7', 'VF 7', 'VF 9'],
-        'Image Path': ['img/vfe34.png', 'img/vf8.png', 'img/vfe34.png', 'img/vf7.png',
-                      'img/vf8.png', 'img/vf9.png', 'img/vfe34.png', 'img/vf8.png',
-                      'img/vfe34.png', 'img/vf7.png', 'img/vf7.png', 'img/vf9.png'],
-        'Rental Fee (per day)': [500000, 700000, 600000, 650000, 700000, 750000, 450000,
-                                 650000, 520000, 580000, 700000, 800000]
+        'Tỉnh/Thành phố': [
+            # Hà Nội
+            'Hà Nội', 'Hà Nội', 'Hà Nội', 'Hà Nội', 'Hà Nội', 'Hà Nội',
+            # Hồ Chí Minh
+            'Hồ Chí Minh', 'Hồ Chí Minh', 'Hồ Chí Minh', 'Hồ Chí Minh', 'Hồ Chí Minh', 'Hồ Chí Minh',
+            # Đà Nẵng
+            'Đà Nẵng', 'Đà Nẵng', 'Đà Nẵng', 'Đà Nẵng',
+            # Hải Phòng
+            'Hải Phòng', 'Hải Phòng', 'Hải Phòng',
+            # Cần Thơ
+            'Cần Thơ', 'Cần Thơ', 'Cần Thơ',
+            # Khánh Hòa
+            'Khánh Hòa', 'Khánh Hòa', 'Khánh Hòa',
+            # Adding more entries for new models
+            'Hà Nội', 'Hà Nội', 'Hà Nội',
+            'Hồ Chí Minh', 'Hồ Chí Minh', 'Hồ Chí Minh',
+            'Đà Nẵng', 'Đà Nẵng',
+            'Hải Phòng', 'Cần Thơ'
+        ],
+        'Quận/Huyện': [
+            # Hà Nội
+            'Cầu Giấy', 'Nam Từ Liêm', 'Hoàng Mai', 'Đống Đa', 'Thanh Xuân', 'Hà Đông',
+            # Hồ Chí Minh
+            'Quận 1', 'Quận 7', 'Thủ Đức', 'Quận 3', 'Tân Bình', 'Bình Thạnh',
+            # Đà Nẵng
+            'Hải Châu', 'Thanh Khê', 'Sơn Trà', 'Ngũ Hành Sơn',
+            # Hải Phòng
+            'Hồng Bàng', 'Ngô Quyền', 'Lê Chân',
+            # Cần Thơ
+            'Ninh Kiều', 'Cái Răng', 'Bình Thủy',
+            # Khánh Hòa
+            'Nha Trang', 'Cam Ranh', 'Ninh Hòa',
+            # Adding more entries for new models
+            'Long Biên', 'Tây Hồ', 'Ba Đình',
+            'Quận 5', 'Quận 10', 'Quận 4',
+            'Liên Chiểu', 'Cẩm Lệ',
+            'Kiến An', 'Ô Môn'
+        ],
+        'Dealer Name': [
+            # Hà Nội
+            'VinFast Cầu Giấy Auto', 'Green Future HN Premium', 'VinFast Hoàng Mai', 
+            'Green Future Đống Đa', 'VinFast Thanh Xuân', 'Green Future Hà Đông',
+            # Hồ Chí Minh
+            'VinFast Central Sài Gòn', 'Green Future District 7', 'VinFast Thủ Đức', 
+            'Saigon Green Mobility', 'VinFast Tân Bình', 'Green Future Bình Thạnh',
+            # Đà Nẵng
+            'VinFast Đà Nẵng Center', 'Green Future Đà Nẵng', 'Dragon Auto DN', 'VinFast NGS',
+            # Hải Phòng
+            'VinFast Hải Phòng', 'HP Green Auto', 'Green Future HP',
+            # Cần Thơ
+            'Mekong Auto', 'Green Future CT', 'VinFast Cần Thơ',
+            # Khánh Hòa
+            'VinFast Nha Trang', 'Green Future KH', 'Nha Trang Green Auto',
+            # Adding more entries for new models
+            'VinFast Long Biên', 'Green Future Tây Hồ', 'VinFast Ba Đình',
+            'VinFast Quận 5', 'Green Future Q10', 'VinFast Quận 4',
+            'VinFast Liên Chiểu', 'Green Future Cẩm Lệ',
+            'VinFast Kiến An', 'VinFast Ô Môn'
+        ],
+        'Địa chỉ cụ thể': [
+            # Hà Nội
+            '258 Xuân Thủy', '68 Mỹ Đình', '159 Giải Phóng',
+            '475 Xã Đàn', '235 Nguyễn Trãi', '198 Quang Trung',
+            # Hồ Chí Minh
+            '11-13 Lê Duẩn', '1059 Nguyễn Văn Linh', '12 Võ Văn Ngân',
+            '86 Nam Kỳ Khởi Nghĩa', '120 Hoàng Văn Thụ', '11 Xô Viết Nghệ Tĩnh',
+            # Đà Nẵng
+            '156 Nguyễn Văn Linh', '68 Điện Biên Phủ', '365 Ngô Quyền', '99 Võ Nguyên Giáp',
+            # Hải Phòng
+            '7 Lạch Tray', '189 Đà Nẵng', '68 Trần Nguyên Hãn',
+            # Cần Thơ
+            '131 Trần Hưng Đạo', '246 CMT8', '78 Võ Văn Kiệt',
+            # Khánh Hòa
+            '86 Trần Phú', '168 23/10', '55 Thái Nguyên',
+            # Adding more entries for new models
+            '456 Nguyễn Văn Cừ', '789 Lạc Long Quân', '101 Đội Cấn',
+            '234 An Dương Vương', '567 Lý Thường Kiệt', '890 Khánh Hội',
+            '123 Hoàng Văn Thái', '456 Ông Ích Khiêm',
+            '789 Trần Thành Ngọ', '101 Nguyễn Văn Cừ'
+        ],
+        'Model': [
+            # Hà Nội
+            'VF e34', 'VF 8', 'VF 9', 'VF 7', 'VF e34', 'VF 8',
+            # Hồ Chí Minh
+            'VF 9', 'VF 8', 'VF 7', 'VF e34', 'VF 8', 'VF 9',
+            # Đà Nẵng
+            'VF e34', 'VF 8', 'VF 7', 'VF 9',
+            # Hải Phòng
+            'VF e34', 'VF 7', 'VF 8',
+            # Cần Thơ
+            'VF e34', 'VF 8', 'VF 9',
+            # Khánh Hòa
+            'VF 7', 'VF 8', 'VF 9',
+            # Adding entries for VF3, VF5, VF6
+            'VF3', 'VF3', 'VF3',
+            'VF5', 'VF5', 'VF5',
+            'VF6', 'VF6',
+            'VF6', 'VF3'
+        ],
+        'Image Path': [
+            # Hà Nội
+            'img/vfe34.png', 'img/vf8.png', 'img/vf9.png', 'img/vf7.png', 'img/vfe34.png', 'img/vf8.png',
+            # Hồ Chí Minh
+            'img/vf9.png', 'img/vf8.png', 'img/vf7.png', 'img/vfe34.png', 'img/vf8.png', 'img/vf9.png',
+            # Đà Nẵng
+            'img/vfe34.png', 'img/vf8.png', 'img/vf7.png', 'img/vf9.png',
+            # Hải Phòng
+            'img/vfe34.png', 'img/vf7.png', 'img/vf8.png',
+            # Cần Thơ
+            'img/vfe34.png', 'img/vf8.png', 'img/vf9.png',
+            # Khánh Hòa
+            'img/vf7.png', 'img/vf8.png', 'img/vf9.png',
+            # Adding entries for new models
+            'img/vf3.png', 'img/vf3.png', 'img/vf3.png',
+            'img/vf5.png', 'img/vf5.png', 'img/vf5.png',
+            'img/vf6.png', 'img/vf6.png',
+            'img/vf6.png', 'img/vf3.png'
+        ],
+        'Rental Fee (per day)': [
+            # Hà Nội
+            550000, 780000, 950000, 680000, 520000, 750000,
+            # Hồ Chí Minh
+            980000, 800000, 700000, 580000, 820000, 950000,
+            # Đà Nẵng
+            500000, 750000, 650000, 900000,
+            # Hải Phòng
+            480000, 620000, 730000,
+            # Cần Thơ
+            450000, 700000, 880000,
+            # Khánh Hòa
+            600000, 720000, 850000,
+            # Adding entries for new models (with appropriate pricing)
+            400000, 420000, 410000,  # VF3 (most affordable)
+            480000, 500000, 490000,  # VF5
+            580000, 600000, 590000, 400000  # VF6 and VF3
+        ]
     }
     return pd.DataFrame(data)
 
@@ -553,7 +631,7 @@ if st.session_state.current_page == 'home':
     col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.markdown("<div class='stat-box'>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-number'>12+</div>", unsafe_allow_html=True)
+        st.markdown("<div class='stat-number'>35+</div>", unsafe_allow_html=True)
         st.markdown("<div class='stat-label'>Xe VinFast sẵn sàng</div>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -565,7 +643,7 @@ if st.session_state.current_page == 'home':
 
     with col3:
         st.markdown("<div class='stat-box'>", unsafe_allow_html=True)
-        st.markdown("<div class='stat-number'>4</div>", unsafe_allow_html=True)
+        st.markdown("<div class='stat-number'>7</div>", unsafe_allow_html=True)
         st.markdown("<div class='stat-label'>Mẫu xe khác nhau</div>", unsafe_allow_html=True)
         st.markdown("</div>", unsafe_allow_html=True)
 
