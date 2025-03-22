@@ -4,6 +4,8 @@ import datetime
 from PIL import Image
 import re
 import os
+import base64
+from io import BytesIO
 
 # Set page config at the start of the file
 st.set_page_config(
@@ -534,84 +536,210 @@ def advanced_search(df, keywords="", province=None, district=None, model=None, p
 
     return result
 
+def get_image_base64(model):
+    """Convert image to base64 string"""
+    try:
+        img = get_model_image(model)
+        if img is not None:
+            buffered = BytesIO()
+            img.save(buffered, format="PNG")
+            return base64.b64encode(buffered.getvalue()).decode()
+    except Exception:
+        return ""  # Return empty string if image processing fails
+    return ""  # Return empty string if image processing fails
 
 # Hàm hiển thị thẻ xe
 def display_car_card(car):
-    st.markdown("<div class='car-card'>", unsafe_allow_html=True)
+    st.markdown("""
+        <div class='car-card'>
+            <div class='car-grid'>
+                <div class='car-image'>
+                    <img src="data:image/png;base64,{}" alt="{}" style="width: 100%; height: auto;">
+                </div>
+                <div class='car-info'>
+                    <h4 class='car-model'>{}</h4>
+                    <div class='dealer-info'>
+                        <p><i class='fas fa-store'></i> <b>Đại lý:</b> {}</p>
+                        <p><i class='fas fa-map-marker-alt'></i> <b>Địa chỉ:</b> {}, {}, {}</p>
+                    </div>
+                    <p class='price'>{}/ngày</p>
+                    <div class='button-container'>
+                        <button class='book-button' onclick="handleBooking('{}')" type="button">
+                            Đặt xe ngay
+                        </button>
+                        <button class='details-button' onclick="handleDetails('{}')" type="button">
+                            Xem chi tiết
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    """.format(
+        get_image_base64(car['Model']),  # Convert image to base64
+        car['Model'],
+        car['Model'],
+        car['Dealer Name'],
+        car['Địa chỉ cụ thể'],
+        car['Quận/Huyện'],
+        car['Tỉnh/Thành phố'],
+        format_currency(car['Rental Fee (per day)']),
+        f"book_{car['Model']}_{car['Địa chỉ cụ thể']}",
+        f"details_{car['Model']}_{car['Địa chỉ cụ thể']}"
+    ), unsafe_allow_html=True)
 
-    # Layout thẻ xe
-    col_img, col_info = st.columns([1, 1.5])
-
-    with col_img:
-        # Hiển thị ảnh xe
-        img = get_model_image(car['Model'])
-        if img is not None:
-            st.image(img, use_container_width=True)
-
-    with col_info:
-        # Thông tin xe
-        st.markdown(f"<h4>{car['Model']}</h4>", unsafe_allow_html=True)
-
-        # Thông tin đại lý và địa chỉ
-        st.markdown(f"<p><i class='fas fa-store'></i> <b>Đại lý:</b> {car['Dealer Name']}</p>", unsafe_allow_html=True)
-        st.markdown(
-            f"<p><i class='fas fa-map-marker-alt'></i> <b>Địa chỉ:</b> {car['Địa chỉ cụ thể']}, {car['Quận/Huyện']}, {car['Tỉnh/Thành phố']}</p>",
-            unsafe_allow_html=True)
-
-        # Hiển thị giá
-        st.markdown(f"<p class='price'>{format_currency(car['Rental Fee (per day)'])}/ngày</p>", unsafe_allow_html=True)
-
-        # Nút đặt xe và chi tiết
-        book_key = f"book_{car['Model']}_{car['Địa chỉ cụ thể']}"
-        details_key = f"details_{car['Model']}_{car['Địa chỉ cụ thể']}"
-
-        # Sử dụng CSS để tạo layout cho buttons
-        st.markdown("""
-            <style>
+    # Add the necessary CSS
+    st.markdown("""
+        <style>
+            .car-card {
+                background: white;
+                border-radius: 15px;
+                padding: 20px;
+                margin: 15px 0;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                transition: transform 0.3s ease, box-shadow 0.3s ease;
+            }
+            
+            .car-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+            }
+            
+            .car-grid {
+                display: grid;
+                grid-template-columns: 1fr 1.5fr;
+                gap: 20px;
+                align-items: start;
+            }
+            
+            .car-image {
+                width: 100%;
+                border-radius: 10px;
+                overflow: hidden;
+            }
+            
+            .car-info {
+                padding: 10px 0;
+            }
+            
+            .car-model {
+                font-size: 1.5rem;
+                font-weight: 600;
+                color: #1a472a;
+                margin-bottom: 15px;
+            }
+            
+            .dealer-info {
+                margin: 15px 0;
+            }
+            
+            .dealer-info p {
+                margin: 8px 0;
+                color: #495057;
+            }
+            
+            .dealer-info i {
+                color: #2e8b57;
+                margin-right: 8px;
+            }
+            
+            .price {
+                font-size: 1.3rem;
+                font-weight: 700;
+                color: #2e8b57;
+                margin: 15px 0;
+            }
+            
             .button-container {
-                display: flex;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
                 gap: 10px;
-                margin-top: 10px;
+                margin-top: 15px;
             }
-            .button-container > div {
-                flex: 1;
+            
+            .book-button, .details-button {
+                padding: 10px 20px;
+                border-radius: 8px;
+                border: none;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.3s ease;
             }
-            </style>
-        """, unsafe_allow_html=True)
+            
+            .book-button {
+                background-color: #2e8b57;
+                color: white;
+            }
+            
+            .book-button:hover {
+                background-color: #1a472a;
+            }
+            
+            .details-button {
+                background-color: #e9ecef;
+                color: #1a472a;
+            }
+            
+            .details-button:hover {
+                background-color: #dee2e6;
+            }
+            
+            @media (max-width: 768px) {
+                .car-grid {
+                    grid-template-columns: 1fr;
+                }
+                
+                .button-container {
+                    grid-template-columns: 1fr;
+                }
+            }
+        </style>
         
-        st.markdown("<div class='button-container'>", unsafe_allow_html=True)
-        
-        # Đặt xe ngay
-        if st.button("Đặt xe ngay", key=book_key, use_container_width=True):
-            st.session_state.booking_state['car_selected'] = {
-                'model': car['Model'],
-                'dealer': car['Dealer Name'],
-                'address': f"{car['Địa chỉ cụ thể']}, {car['Quận/Huyện']}, {car['Tỉnh/Thành phố']}",
-                'rental_fee': car['Rental Fee (per day)']
+        <script>
+            function handleBooking(key) {
+                // Using Streamlit's event handling
+                window.parent.postMessage({
+                    type: "streamlit:setComponentValue",
+                    value: key
+                }, "*");
             }
-            st.session_state.current_page = 'booking'
-            st.session_state.booking_state['booking_step'] = 1
-            st.markdown("<script>window.scrollTo(0, 0);</script>", unsafe_allow_html=True)
-            st.rerun()
-
-        # Xem chi tiết - Chuyển hướng đến trang chi tiết
-        if st.button("Xem chi tiết", key=details_key, use_container_width=True):
-            # Lưu thông tin xe được chọn
-            st.session_state.car_detail = car['Model']
-            st.session_state.car_detail_info = {
-                'model': car['Model'],
-                'dealer': car['Dealer Name'],
-                'address': f"{car['Địa chỉ cụ thể']}, {car['Quận/Huyện']}, {car['Tỉnh/Thành phố']}",
-                'rental_fee': car['Rental Fee (per day)']
+            
+            function handleDetails(key) {
+                // Using Streamlit's event handling
+                window.parent.postMessage({
+                    type: "streamlit:setComponentValue",
+                    value: key
+                }, "*");
             }
-            # Chuyển đến trang chi tiết
-            st.session_state.current_page = 'car_detail'
-            st.markdown("<script>window.scrollTo(0, 0);</script>", unsafe_allow_html=True)
-            st.rerun()
+        </script>
+    """, unsafe_allow_html=True)
 
-        st.markdown("</div>", unsafe_allow_html=True)
+    # Handle button clicks using Streamlit components
+    book_key = f"book_{car['Model']}_{car['Địa chỉ cụ thể']}"
+    details_key = f"details_{car['Model']}_{car['Địa chỉ cụ thể']}"
+    
+    if st.session_state.get(book_key):
+        st.session_state.booking_state['car_selected'] = {
+            'model': car['Model'],
+            'dealer': car['Dealer Name'],
+            'address': f"{car['Địa chỉ cụ thể']}, {car['Quận/Huyện']}, {car['Tỉnh/Thành phố']}",
+            'rental_fee': car['Rental Fee (per day)']
+        }
+        st.session_state.current_page = 'booking'
+        st.session_state.booking_state['booking_step'] = 1
+        st.rerun()
+    
+    if st.session_state.get(details_key):
+        st.session_state.car_detail = car['Model']
+        st.session_state.car_detail_info = {
+            'model': car['Model'],
+            'dealer': car['Dealer Name'],
+            'address': f"{car['Địa chỉ cụ thể']}, {car['Quận/Huyện']}, {car['Tỉnh/Thành phố']}",
+            'rental_fee': car['Rental Fee (per day)']
+        }
+        st.session_state.current_page = 'car_detail'
+        st.rerun()
 
-    st.markdown("</div>", unsafe_allow_html=True)
+
 
 
 # Kiểm tra trạng thái phiên làm việc và khởi tạo nếu cần
