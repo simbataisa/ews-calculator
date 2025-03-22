@@ -1,110 +1,121 @@
 import pandas as pd
 
-# Mock data: Each row represents a single vehicle,
-# with city, dealer info, model, image link, and rental fee.
+# Danh sách dữ liệu mẫu
 data = [
     {
-        "City": "Hanoi",
+        "Tỉnh/Thành phố": "Hà Nội",
+        "Quận/Huyện": "Hoàng Mai",
         "Dealer Name": "ABC Vinfast Dealer",
-        "Dealer Address": "123 Linh Dam, Hanoi",
+        "Địa chỉ cụ thể": "123 Linh Đàm",
         "Model": "VF e34",
-        "Image Link/Path": "http://example.com/hanoi/abc/vfe34.jpg",
+        "Image Link/Path": "http://example.com/hanoi/hoangmai/abc_vfe34.jpg",
         "Rental Fee (per day)": 500000
     },
     {
-        "City": "Hanoi",
+        "Tỉnh/Thành phố": "Hà Nội",
+        "Quận/Huyện": "Hoàng Mai",
         "Dealer Name": "ABC Vinfast Dealer",
-        "Dealer Address": "123 Linh Dam, Hanoi",
+        "Địa chỉ cụ thể": "123 Linh Đàm",
         "Model": "VF 8",
-        "Image Link/Path": "http://example.com/hanoi/abc/vf8.jpg",
+        "Image Link/Path": "http://example.com/hanoi/hoangmai/abc_vf8.jpg",
         "Rental Fee (per day)": 700000
     },
     {
-        "City": "Ho Chi Minh City",
+        "Tỉnh/Thành phố": "Hồ Chí Minh",
+        "Quận/Huyện": "Quận 1",
         "Dealer Name": "XYZ Vinfast Dealer",
-        "Dealer Address": "45 District 1, HCMC",
+        "Địa chỉ cụ thể": "45 Lê Lợi",
         "Model": "VF e34",
-        "Image Link/Path": "http://example.com/hcm/xyz/vfe34.jpg",
+        "Image Link/Path": "http://example.com/hcm/q1/xyz_vfe34.jpg",
         "Rental Fee (per day)": 600000
     },
     {
-        "City": "Ho Chi Minh City",
+        "Tỉnh/Thành phố": "Hồ Chí Minh",
+        "Quận/Huyện": "Quận 1",
         "Dealer Name": "XYZ Vinfast Dealer",
-        "Dealer Address": "45 District 1, HCMC",
+        "Địa chỉ cụ thể": "45 Lê Lợi",
         "Model": "VF 7",
-        "Image Link/Path": "http://example.com/hcm/xyz/vf7.jpg",
+        "Image Link/Path": "http://example.com/hcm/q1/xyz_vf7.jpg",
         "Rental Fee (per day)": 650000
     },
     {
-        "City": "Da Nang",
+        "Tỉnh/Thành phố": "Đà Nẵng",
+        "Quận/Huyện": "Hải Châu",
         "Dealer Name": "Premier Vinfast Dealer",
-        "Dealer Address": "98 Hai Chau, Da Nang",
+        "Địa chỉ cụ thể": "98 Hải Châu",
         "Model": "VF 8",
-        "Image Link/Path": "http://example.com/danang/premier/vf8.jpg",
+        "Image Link/Path": "http://example.com/danang/haichau/premier_vf8.jpg",
         "Rental Fee (per day)": 700000
     },
     {
-        "City": "Da Nang",
+        "Tỉnh/Thành phố": "Đà Nẵng",
+        "Quận/Huyện": "Hải Châu",
         "Dealer Name": "Green Motors Dealer",
-        "Dealer Address": "10 Le Duan, Da Nang",
+        "Địa chỉ cụ thể": "10 Lê Duẩn",
         "Model": "VF 9",
-        "Image Link/Path": "http://example.com/danang/greenmotors/vf9.jpg",
+        "Image Link/Path": "http://example.com/danang/haichau/green_vf9.jpg",
         "Rental Fee (per day)": 750000
     },
     {
-        "City": "Hai Phong",
-        "Dealer Name": "Red Dragon Dealer",
-        "Dealer Address": "73 Lac Long Quan, Hai Phong",
-        "Model": "VF e34",
-        "Image Link/Path": "http://example.com/haiphong/reddragon/vfe34.jpg",
-        "Rental Fee (per day)": 520000
-    },
-    {
-        "City": "Hai Phong",
-        "Dealer Name": "Red Dragon Dealer",
-        "Dealer Address": "73 Lac Long Quan, Hai Phong",
-        "Model": "VF 7",
-        "Image Link/Path": "http://example.com/haiphong/reddragon/vf7.jpg",
-        "Rental Fee (per day)": 580000
-    },
-    {
-        "City": "Can Tho",
+        "Tỉnh/Thành phố": "Cần Thơ",
+        "Quận/Huyện": "Ninh Kiều",
         "Dealer Name": "ABC Vinfast Dealer",
-        "Dealer Address": "35 Ninh Kieu, Can Tho",
+        "Địa chỉ cụ thể": "35 Ninh Kiều",
         "Model": "VF e34",
-        "Image Link/Path": "http://example.com/cantho/abc/vfe34.jpg",
+        "Image Link/Path": "http://example.com/cantho/ninhkieu/abc_vfe34.jpg",
         "Rental Fee (per day)": 450000
     },
     {
-        "City": "Can Tho",
+        "Tỉnh/Thành phố": "Cần Thơ",
+        "Quận/Huyện": "Cái Răng",
         "Dealer Name": "XYZ Vinfast Dealer",
-        "Dealer Address": "27 Cai Rang, Can Tho",
+        "Địa chỉ cụ thể": "27 Cái Răng",
         "Model": "VF 8",
-        "Image Link/Path": "http://example.com/cantho/xyz/vf8.jpg",
+        "Image Link/Path": "http://example.com/cantho/cairang/xyz_vf8.jpg",
         "Rental Fee (per day)": 650000
     },
     {
-        "City": "Nha Trang",
-        "Dealer Name": "Green Motors Dealer",
-        "Dealer Address": "66 Tran Phu, Nha Trang",
+        "Tỉnh/Thành phố": "Hải Phòng",
+        "Quận/Huyện": "Lê Chân",
+        "Dealer Name": "Red Dragon Dealer",
+        "Địa chỉ cụ thể": "73 Lạch Tray",
+        "Model": "VF e34",
+        "Image Link/Path": "http://example.com/haiphong/lechân/reddragon_vfe34.jpg",
+        "Rental Fee (per day)": 520000
+    },
+    {
+        "Tỉnh/Thành phố": "Hải Phòng",
+        "Quận/Huyện": "Lê Chân",
+        "Dealer Name": "Red Dragon Dealer",
+        "Địa chỉ cụ thể": "73 Lạch Tray",
         "Model": "VF 7",
-        "Image Link/Path": "http://example.com/nhatrang/greenmotors/vf7.jpg",
+        "Image Link/Path": "http://example.com/haiphong/lechân/reddragon_vf7.jpg",
+        "Rental Fee (per day)": 580000
+    },
+    {
+        "Tỉnh/Thành phố": "Khánh Hòa",
+        "Quận/Huyện": "Nha Trang",
+        "Dealer Name": "Green Motors Dealer",
+        "Địa chỉ cụ thể": "66 Trần Phú",
+        "Model": "VF 7",
+        "Image Link/Path": "http://example.com/nhatrang/greenmotors_vf7.jpg",
         "Rental Fee (per day)": 700000
     },
     {
-        "City": "Nha Trang",
+        "Tỉnh/Thành phố": "Khánh Hòa",
+        "Quận/Huyện": "Nha Trang",
         "Dealer Name": "Red Dragon Dealer",
-        "Dealer Address": "89 Hung Vuong, Nha Trang",
+        "Địa chỉ cụ thể": "89 Hùng Vương",
         "Model": "VF 9",
-        "Image Link/Path": "http://example.com/nhatrang/reddragon/vf9.jpg",
+        "Image Link/Path": "http://example.com/nhatrang/reddragon_vf9.jpg",
         "Rental Fee (per day)": 800000
     },
 ]
 
-# Create a DataFrame
+# Tạo DataFrame
 df = pd.DataFrame(data)
 
-# Write DataFrame to an Excel file
-output_file = "Vinfast_Dealer_Management_With_Fees.xlsx"
+# Ghi DataFrame ra file Excel
+output_file = "Vinfast_Dealer_Management_With_Fees_District.xlsx"
 df.to_excel(output_file, sheet_name="DealerData", index=False)
-print(f"Excel file '{output_file}' created successfully!")
+print(f"File Excel '{output_file}' đã được tạo thành công!")
