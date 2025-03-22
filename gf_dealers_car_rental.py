@@ -2,9 +2,8 @@ import streamlit as st
 import pandas as pd
 import datetime
 from PIL import Image
-import requests
-from io import BytesIO
 import re
+import os
 
 # Add this at the beginning of your file, after imports
 st.markdown("""
@@ -225,6 +224,24 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+# Add this JavaScript function at the beginning of your script, after the CSS styles
+st.markdown("""
+    <script>
+        function scrollToTop() {
+            window.scrollTo(0, 0);
+        }
+    </script>
+""", unsafe_allow_html=True)
+
+# Add this CSS to ensure smooth scrolling
+st.markdown("""
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 
 # Tạo dữ liệu xe
 @st.cache_data
@@ -245,9 +262,9 @@ def load_data():
                            '73 Lạch Tray', '73 Lạch Tray', '66 Trần Phú', '89 Hùng Vương'],
         'Model': ['VF e34', 'VF 8', 'VF e34', 'VF 7', 'VF 8', 'VF 9', 'VF e34', 'VF 8',
                   'VF e34', 'VF 7', 'VF 7', 'VF 9'],
-        'Image Path': ['vf_e34.jpg', 'vf_8.jpg', 'vf_e34.jpg', 'vf_7.jpg', 'vf_8.jpg',
-                       'vf_9.jpg', 'vf_e34.jpg', 'vf_8.jpg', 'vf_e34.jpg', 'vf_7.jpg',
-                       'vf_7.jpg', 'vf_9.jpg'],
+        'Image Path': ['img/vfe34.png', 'img/vf8.png', 'img/vfe34.png', 'img/vf7.png',
+                      'img/vf8.png', 'img/vf9.png', 'img/vfe34.png', 'img/vf8.png',
+                      'img/vfe34.png', 'img/vf7.png', 'img/vf7.png', 'img/vf9.png'],
         'Rental Fee (per day)': [500000, 700000, 600000, 650000, 700000, 750000, 450000,
                                  650000, 520000, 580000, 700000, 800000]
     }
@@ -259,10 +276,34 @@ df = load_data()
 
 # Mô tả mẫu xe
 model_descriptions = {
-    "VF e34": "Mẫu SUV cỡ nhỏ chạy điện với phạm vi hoạt động 285km, công suất 147 mã lực. Phù hợp cho di chuyển trong phố.",
-    "VF 7": "Mẫu SUV cỡ vừa với thiết kế thể thao, công suất lên đến 349 mã lực, phạm vi hoạt động 400km. Lựa chọn lý tưởng cho gia đình.",
-    "VF 8": "Mẫu SUV cỡ trung với không gian rộng rãi, công suất 402 mã lực, phạm vi hoạt động 420km. Đáp ứng nhu cầu di chuyển xa và thoải mái.",
-    "VF 9": "Mẫu SUV cỡ lớn với 3 hàng ghế, không gian rộng rãi, công suất 408 mã lực, phạm vi hoạt động 438km. Phù hợp cho gia đình đông người."
+    "VF 3": {
+        "description": "Mẫu xe đô thị cỡ nhỏ, lý tưởng cho di chuyển trong phố.",
+        "image": "vf3.png"
+    },
+    "VF e34": {
+        "description": "Mẫu SUV cỡ nhỏ chạy điện với phạm vi hoạt động 285km, công suất 147 mã lực. Phù hợp cho di chuyển trong phố.",
+        "image": "vfe34.png"
+    },
+    "VF 5": {
+        "description": "Mẫu SUV đô thị nhỏ gọn với thiết kế hiện đại.",
+        "image": "vf5.png"
+    },
+    "VF 6": {
+        "description": "Mẫu SUV cỡ C với thiết kế thời trang, công nghệ hiện đại.",
+        "image": "vf6.png"
+    },
+    "VF 7": {
+        "description": "Mẫu SUV cỡ vừa với thiết kế thể thao, công suất lên đến 349 mã lực, phạm vi hoạt động 400km. Lựa chọn lý tưởng cho gia đình.",
+        "image": "vf7.png"
+    },
+    "VF 8": {
+        "description": "Mẫu SUV cỡ trung với không gian rộng rãi, công suất 402 mã lực, phạm vi hoạt động 420km. Đáp ứng nhu cầu di chuyển xa và thoải mái.",
+        "image": "vf8.png"
+    },
+    "VF 9": {
+        "description": "Mẫu SUV cỡ lớn với 3 hàng ghế, không gian rộng rãi, công suất 408 mã lực, phạm vi hoạt động 438km. Phù hợp cho gia đình đông người.",
+        "image": "vf9.png"
+    }
 }
 
 # Thông số kỹ thuật chi tiết
@@ -309,29 +350,30 @@ model_specs = {
 # Hàm lấy ảnh cho mỗi mẫu xe
 @st.cache_data
 def get_model_image(model):
-    # VF8 và VF9 sử dụng ảnh từ thư mục img
-    if model in ["VF 8", "VF 9"]:
-        try:
-            img_path = f"img/vf{model.split()[-1].lower()}.png"
-            return Image.open(img_path)
-        except FileNotFoundError:
-            st.warning(f"{model} image not found. Please place {img_path} in the img folder.")
-            return None
-    
-    # Các mẫu xe khác sử dụng URL công khai
-    model_images = {
-        "VF e34": "https://cdn.tgdd.vn/Products/Images/42/251903/Kit/vinfast-vf-e34-slider.jpg",
-        "VF 7": "https://cdn.motor1.com/images/mgl/kooLPk/s1/vinfast-vf-7-phev.jpg",
-    }
-
-    # Sử dụng URL ảnh nếu có kết nối internet
+    """Get image for a specific VinFast model from local img folder"""
     try:
-        response = requests.get(model_images.get(model, "https://via.placeholder.com/400x300?text=VinFast"))
-        img = Image.open(BytesIO(response.content))
-        return img
-    except:
-        # Fallback if image can't be loaded
+        # Convert model name to lowercase and remove spaces for filename
+        # e.g., 'VF e34' -> 'vfe34', 'VF 8' -> 'vf8'
+        model_filename = f"img/{''.join(model.lower().split())}.png"
+        return Image.open(model_filename)
+    except FileNotFoundError:
+        st.warning(f"Image not found: {model_filename}. Please ensure the image exists in the img folder.")
+        # Fallback to placeholder image
         return None
+
+# Ensure img directory exists
+if not os.path.exists("img"):
+    os.makedirs("img")
+    st.warning("""
+        The 'img' directory has been created. Please add the following images:
+        - img/vf3.png
+        - img/vfe34.png
+        - img/vf5.png
+        - img/vf6.png
+        - img/vf7.png
+        - img/vf8.png
+        - img/vf9.png
+    """)
 
 
 # Định dạng tiền
@@ -435,6 +477,7 @@ def display_car_card(car):
             }
             st.session_state.current_page = 'booking'
             st.session_state.booking_state['booking_step'] = 1
+            st.markdown("<script>window.scrollTo(0, 0);</script>", unsafe_allow_html=True)
             st.rerun()
 
         # Xem chi tiết - Chuyển hướng đến trang chi tiết
@@ -449,6 +492,7 @@ def display_car_card(car):
             }
             # Chuyển đến trang chi tiết
             st.session_state.current_page = 'car_detail'
+            st.markdown("<script>window.scrollTo(0, 0);</script>", unsafe_allow_html=True)
             st.rerun()
 
         st.markdown("</div>", unsafe_allow_html=True)
@@ -533,7 +577,7 @@ if st.session_state.current_page == 'home':
     st.markdown("</div>", unsafe_allow_html=True)
 
     # Khu vực tìm kiếm và lọc
-    st.markdown("<div class='section'>", unsafe_allow_html=True)
+    # st.markdown("<div class='section'>", unsafe_allow_html=True)
     st.markdown("<h3 class='section-header'>Tìm kiếm xe VinFast</h3>", unsafe_allow_html=True)
 
     # Tìm kiếm đơn giản
@@ -755,12 +799,53 @@ elif st.session_state.current_page == 'booking':
 
     # Hiển thị thông tin xe đã chọn
     car_selected = st.session_state.booking_state['car_selected']
+    
     st.markdown("<div class='car-card'>", unsafe_allow_html=True)
-    st.markdown(f"<h4>Xe đã chọn: {car_selected['model']}</h4>", unsafe_allow_html=True)
-    st.markdown(f"<p><b>Đại lý:</b> {car_selected['dealer']}</p>", unsafe_allow_html=True)
-    st.markdown(f"<p><b>Địa chỉ:</b> {car_selected['address']}</p>", unsafe_allow_html=True)
-    st.markdown(f"<p class='price'>{format_currency(car_selected['rental_fee'])}/ngày</p>", unsafe_allow_html=True)
+    
+    # Create two columns for image and info
+    col_img, col_info = st.columns([1, 1.5])
+    
+    with col_img:
+        # Display car image
+        img = get_model_image(car_selected['model'])
+        if img is not None:
+            st.image(img, use_container_width=True)
+    
+    with col_info:
+        st.markdown(f"<h4>Xe đã chọn: {car_selected['model']}</h4>", unsafe_allow_html=True)
+        st.markdown(f"<p><b>Đại lý:</b> {car_selected['dealer']}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p><b>Địa chỉ:</b> {car_selected['address']}</p>", unsafe_allow_html=True)
+        st.markdown(f"<p class='price'>{format_currency(car_selected['rental_fee'])}/ngày</p>", unsafe_allow_html=True)
+    
     st.markdown("</div>", unsafe_allow_html=True)
+
+    # Add some CSS to style the booking car card
+    st.markdown("""
+        <style>
+        .car-card {
+            background-color: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        .car-card h4 {
+            color: #1a1a1a;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+        .car-card p {
+            margin-bottom: 0.5rem;
+            color: #4a4a4a;
+        }
+        .car-card .price {
+            color: #28a745;
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+        </style>
+    """, unsafe_allow_html=True)
 
     # Form đặt xe
     with st.form("booking_form"):
