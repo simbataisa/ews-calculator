@@ -424,42 +424,122 @@ model_descriptions = {
 
 # Thông số kỹ thuật chi tiết
 model_specs = {
+    "VF 3": {
+        "Công suất": "100 kW (134 mã lực)",
+        "Mô-men xoắn": "190 Nm",
+        "Phạm vi hoạt động": "200 km",
+        "Thời gian sạc": "5 giờ (10-80%)",
+        "Số chỗ ngồi": "4",
+        "Dài x Rộng x Cao": "3.114 x 1.670 x 1.621 mm",
+        "Trọng lượng": "1.165 kg",
+        "Dung lượng pin": "35 kWh"
+    },
     "VF e34": {
-        "Công suất": "147 mã lực",
+        "Công suất": "150 kW (201 mã lực)",
         "Mô-men xoắn": "242 Nm",
-        "Phạm vi hoạt động": "285 km",
+        "Phạm vi hoạt động": "300 km",
         "Thời gian sạc": "6 giờ (10-80%)",
         "Số chỗ ngồi": "5",
         "Dài x Rộng x Cao": "4.300 x 1.793 x 1.613 mm",
-        "Trọng lượng": "1.490 kg"
+        "Trọng lượng": "1.490 kg",
+        "Dung lượng pin": "51 kWh"
+    },
+    "VF 5": {
+        "Công suất": "130 kW (174 mã lực)",
+        "Mô-men xoắn": "220 Nm",
+        "Phạm vi hoạt động": "280 km",
+        "Thời gian sạc": "5.5 giờ (10-80%)",
+        "Số chỗ ngồi": "5",
+        "Dài x Rộng x Cao": "3.965 x 1.720 x 1.580 mm",
+        "Trọng lượng": "1.350 kg",
+        "Dung lượng pin": "42 kWh"
+    },
+    "VF 6": {
+        "Công suất": "170 kW (228 mã lực)",
+        "Mô-men xoắn": "350 Nm",
+        "Phạm vi hoạt động": "350 km",
+        "Thời gian sạc": "5.5 giờ (10-80%)",
+        "Số chỗ ngồi": "5",
+        "Dài x Rộng x Cao": "4.238 x 1.820 x 1.594 mm",
+        "Trọng lượng": "1.600 kg",
+        "Dung lượng pin": "59.6 kWh"
     },
     "VF 7": {
-        "Công suất": "349 mã lực",
+        "Công suất": "260 kW (349 mã lực)",
         "Mô-men xoắn": "500 Nm",
-        "Phạm vi hoạt động": "400 km",
+        "Phạm vi hoạt động": "450 km",
         "Thời gian sạc": "5 giờ (10-80%)",
         "Số chỗ ngồi": "5",
         "Dài x Rộng x Cao": "4.545 x 1.890 x 1.635 mm",
-        "Trọng lượng": "1.680 kg"
+        "Trọng lượng": "1.680 kg",
+        "Dung lượng pin": "75.3 kWh"
     },
     "VF 8": {
-        "Công suất": "402 mã lực",
+        "Công suất": "300 kW (402 mã lực)",
         "Mô-men xoắn": "620 Nm",
-        "Phạm vi hoạt động": "420 km",
+        "Phạm vi hoạt động": "550 km",
         "Thời gian sạc": "5.5 giờ (10-80%)",
         "Số chỗ ngồi": "5",
         "Dài x Rộng x Cao": "4.750 x 1.934 x 1.667 mm",
-        "Trọng lượng": "2.050 kg"
+        "Trọng lượng": "2.050 kg",
+        "Dung lượng pin": "87.7 kWh"
     },
     "VF 9": {
-        "Công suất": "408 mã lực",
+        "Công suất": "300 kW (402 mã lực)",
         "Mô-men xoắn": "640 Nm",
-        "Phạm vi hoạt động": "438 km",
+        "Phạm vi hoạt động": "600 km",
         "Thời gian sạc": "6 giờ (10-80%)",
         "Số chỗ ngồi": "7",
         "Dài x Rộng x Cao": "5.120 x 2.000 x 1.721 mm",
-        "Trọng lượng": "2.470 kg"
+        "Trọng lượng": "2.470 kg",
+        "Dung lượng pin": "92 kWh"
     }
+}
+
+# Update the features dictionary to include all models
+features = {
+    "VF 3": [
+        "Hệ thống phanh ABS/EBD/ESC",
+        "Camera lùi",
+        "Cảm biến áp suất lốp",
+        "Màn hình cảm ứng 10 inch"
+    ],
+    "VF e34": [
+        "Hệ thống hỗ trợ lái ADAS",
+        "Cảnh báo điểm mù",
+        "Cảnh báo va chạm phía trước",
+        "Hỗ trợ đỗ xe tự động"
+    ],
+    "VF 5": [
+        "Hệ thống kiểm soát hành trình",
+        "Cảm biến đỗ xe",
+        "Màn hình giải trí 10 inch",
+        "Kết nối Apple CarPlay/Android Auto"
+    ],
+    "VF 6": [
+        "Hệ thống hỗ trợ lái thông minh",
+        "Màn hình cảm ứng 12.9 inch",
+        "Camera 360 độ",
+        "Trợ lý ảo thông minh"
+    ],
+    "VF 7": [
+        "Hệ thống hỗ trợ lái nâng cao",
+        "Màn hình cảm ứng trung tâm 12.9 inch",
+        "Trợ lý ảo",
+        "Hệ thống âm thanh cao cấp"
+    ],
+    "VF 8": [
+        "Hệ thống tự lái cấp độ 2",
+        "Màn hình AR-HUD",
+        "Ghế massage",
+        "Cửa sổ trời toàn cảnh"
+    ],
+    "VF 9": [
+        "Hệ thống tự lái cấp độ 2+",
+        "7 ghế ngồi rộng rãi",
+        "Màn hình giải trí 15.6 inch",
+        "Hệ thống làm mát/sưởi ghế toàn xe"
+    ]
 }
 
 
@@ -563,31 +643,50 @@ def display_car_card(car):
                         <p><i class='fas fa-map-marker-alt'></i> <b>Địa chỉ:</b> {}, {}, {}</p>
                     </div>
                     <p class='price'>{}/ngày</p>
-                    <div class='button-container'>
-                        <button class='book-button' onclick="handleBooking('{}')" type="button">
-                            Đặt xe ngay
-                        </button>
-                        <button class='details-button' onclick="handleDetails('{}')" type="button">
-                            Xem chi tiết
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
     """.format(
-        get_image_base64(car['Model']),  # Convert image to base64
+        get_image_base64(car['Model']),
         car['Model'],
         car['Model'],
         car['Dealer Name'],
         car['Địa chỉ cụ thể'],
         car['Quận/Huyện'],
         car['Tỉnh/Thành phố'],
-        format_currency(car['Rental Fee (per day)']),
-        f"book_{car['Model']}_{car['Địa chỉ cụ thể']}",
-        f"details_{car['Model']}_{car['Địa chỉ cụ thể']}"
+        format_currency(car['Rental Fee (per day)'])
     ), unsafe_allow_html=True)
 
-    # Add the necessary CSS
+    # Add buttons using Streamlit's native components
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        if st.button("Đặt xe ngay", key=f"book_{car['Model']}_{car['Địa chỉ cụ thể']}", use_container_width=True):
+            st.session_state.booking_state['car_selected'] = {
+                'model': car['Model'],
+                'dealer': car['Dealer Name'],
+                'address': f"{car['Địa chỉ cụ thể']}, {car['Quận/Huyện']}, {car['Tỉnh/Thành phố']}",
+                'rental_fee': car['Rental Fee (per day)']
+            }
+            st.session_state.current_page = 'booking'
+            st.session_state.booking_state['booking_step'] = 1
+            st.rerun()
+
+    with col2:
+        if st.button("Xem chi tiết", key=f"details_{car['Model']}_{car['Địa chỉ cụ thể']}", use_container_width=True):
+            st.session_state.car_detail = car['Model']
+            st.session_state.car_detail_info = {
+                'model': car['Model'],
+                'dealer': car['Dealer Name'],
+                'address': f"{car['Địa chỉ cụ thể']}, {car['Quận/Huyện']}, {car['Tỉnh/Thành phố']}",
+                'rental_fee': car['Rental Fee (per day)']
+            }
+            # Add technical specifications to session state
+            st.session_state.car_specs = model_specs.get(car['Model'], {})
+            st.session_state.current_page = 'car_detail'
+            st.rerun()
+
+    # CSS for styling
     st.markdown("""
         <style>
             .car-card {
@@ -649,68 +748,12 @@ def display_car_card(car):
                 margin: 15px 0;
             }
             
-            .button-container {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 10px;
-                margin-top: 15px;
-            }
-            
-            .book-button, .details-button {
-                padding: 10px 20px;
-                border-radius: 8px;
-                border: none;
-                font-weight: 600;
-                cursor: pointer;
-                transition: all 0.3s ease;
-            }
-            
-            .book-button {
-                background-color: #2e8b57;
-                color: white;
-            }
-            
-            .book-button:hover {
-                background-color: #1a472a;
-            }
-            
-            .details-button {
-                background-color: #e9ecef;
-                color: #1a472a;
-            }
-            
-            .details-button:hover {
-                background-color: #dee2e6;
-            }
-            
             @media (max-width: 768px) {
                 .car-grid {
                     grid-template-columns: 1fr;
                 }
-                
-                .button-container {
-                    grid-template-columns: 1fr;
-                }
             }
         </style>
-        
-        <script>
-            function handleBooking(key) {
-                // Using Streamlit's event handling
-                window.parent.postMessage({
-                    type: "streamlit:setComponentValue",
-                    value: key
-                }, "*");
-            }
-            
-            function handleDetails(key) {
-                // Using Streamlit's event handling
-                window.parent.postMessage({
-                    type: "streamlit:setComponentValue",
-                    value: key
-                }, "*");
-            }
-        </script>
     """, unsafe_allow_html=True)
 
     # Handle button clicks using Streamlit components
