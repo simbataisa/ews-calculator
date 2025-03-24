@@ -525,44 +525,76 @@ with tab_results:
         return [''] * len(row)
 
 
-    # Hiển thị ba bảng dữ liệu cạnh nhau trong ba cột
-    col1, col2, col3 = st.columns(3)
+    # Hiển thị ba bảng dữ liệu cạnh nhau với khả năng cuộn ngang
+    st.markdown("""
+    <style>
+    .stDataFrame {
+        overflow-x: auto !important;
+    }
+    .scroll-container {
+        width: 100%;
+        overflow-x: auto;
+        white-space: nowrap;
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    .table-column {
+        display: inline-block;
+        vertical-align: top;
+        min-width: 30%;
+        white-space: normal;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-    with col1:
-        st.markdown(f"### Phương pháp 1: Cố định 30 ngày")
-        st.markdown(f"**Tổng tiền: {format_vnd(method1_total)}**")
+    # Sử dụng HTML để tạo container cuộn ngang
+    st.markdown('<div class="scroll-container">', unsafe_allow_html=True)
 
-        st.dataframe(
-            df_method1.style.apply(highlight_custom, axis=1).format({
-                "Số tiền": lambda x: format_vnd(x)
-            }),
-            hide_index=True,
-            use_container_width=True
-        )
+    # Phương pháp 1
+    st.markdown('<div class="table-column">', unsafe_allow_html=True)
+    st.markdown(f"### Phương pháp 1: Cố định 30 ngày")
+    st.markdown(f"**Tổng tiền: {format_vnd(method1_total)}**")
 
-    with col2:
-        st.markdown(f"### Phương pháp 2: Prorated theo tháng")
-        st.markdown(f"**Tổng tiền: {format_vnd(method2_total)}**")
+    st.dataframe(
+        df_method1.style.apply(highlight_custom, axis=1).format({
+            "Số tiền": lambda x: format_vnd(x)
+        }),
+        hide_index=True,
+        use_container_width=True
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
 
-        st.dataframe(
-            df_method2.style.apply(highlight_prorated, axis=1).format({
-                "Số tiền": lambda x: format_vnd(x)
-            }),
-            hide_index=True,
-            use_container_width=True
-        )
+    # Phương pháp 2
+    st.markdown('<div class="table-column">', unsafe_allow_html=True)
+    st.markdown(f"### Phương pháp 2: Prorated theo tháng")
+    st.markdown(f"**Tổng tiền: {format_vnd(method2_total)}**")
 
-    with col3:
-        st.markdown(f"### Phương pháp 3: Ngày kết thúc cố định ({cycle_end_day})")
-        st.markdown(f"**Tổng tiền: {format_vnd(method3_total)}**")
+    st.dataframe(
+        df_method2.style.apply(highlight_prorated, axis=1).format({
+            "Số tiền": lambda x: format_vnd(x)
+        }),
+        hide_index=True,
+        use_container_width=True
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
 
-        st.dataframe(
-            df_method3.style.apply(highlight_prorated, axis=1).format({
-                "Số tiền": lambda x: format_vnd(x)
-            }),
-            hide_index=True,
-            use_container_width=True
-        )
+    # Phương pháp 3
+    st.markdown('<div class="table-column">', unsafe_allow_html=True)
+    st.markdown(f"### Phương pháp 3: Ngày kết thúc cố định ({cycle_end_day})")
+    st.markdown(f"**Tổng tiền: {format_vnd(method3_total)}**")
+
+    st.dataframe(
+        df_method3.style.apply(highlight_prorated, axis=1).format({
+            "Số tiền": lambda x: format_vnd(x)
+        }),
+        hide_index=True,
+        use_container_width=True
+    )
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Đóng container cuộn ngang
+    st.markdown('</div>', unsafe_allow_html=True)
 
     # Nút xuất báo cáo
     st.subheader("Xuất báo cáo")
